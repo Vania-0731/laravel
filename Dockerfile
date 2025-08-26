@@ -1,28 +1,30 @@
-# Usa la imagen oficial de PHP con FPM (FastCGI Process Manager)
 FROM php:8.1-fpm
-
-# Instala herramientas y extensiones necesarias para Laravel
+# Instala dependencias del sistema
 RUN apt-get update && apt-get install -y \
     git \
     unzip \
     libzip-dev \
     zip \
-    && docker-php-ext-install zip pdo pdo_mysql
+    libpq-dev \
+    libonig-dev \
+    libxml2-dev \
+    curl \
+    && docker-php-ext-install pdo pdo_pgsql mbstring zip exif pcntl
 
-# Instala Composer desde la imagen oficial
+# Instala Composer
 COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 
-# Establece el directorio de trabajo dentro del contenedor
+# Establece el directorio de trabajo
 WORKDIR /var/www/html
 
-# Copia todos los archivos del proyecto al contenedor
+# Copia archivos del proyecto
 COPY . .
 
-# Instala las dependencias de PHP con Composer
-RUN composer install --no-dev --optimize-autoloader
+# Instala las dependencias
+RUN composer install --no-interaction --prefer-dist --optimize-autoloader
 
-# Expone el puerto 9000 que usa PHP-FPM
+# Abre el puerto
 EXPOSE 9000
 
-# Comando para iniciar PHP-FPM cuando el contenedor se ejecute
+# Comando por defecto
 CMD ["php-fpm"]
