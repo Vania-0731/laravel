@@ -28,7 +28,7 @@ RUN composer config --no-plugins allow-plugins.laravel/serializable-closure true
 RUN composer install --no-interaction --prefer-dist --optimize-autoloader
 
 # Abre puerto
-EXPOSE 9000
+EXPOSE 8000
 
-# Comando por defecto
-CMD ["php-fpm"]
+CMD ["php", "artisan", "serve", "--host=0.0.0.0", "--port=8000"]
+
