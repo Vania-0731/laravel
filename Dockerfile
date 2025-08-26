@@ -32,3 +32,5 @@ EXPOSE 8000
 
 CMD ["php", "artisan", "serve", "--host=0.0.0.0", "--port=8000"]
 
+# Después de instalar dependencias y copiar archivos
+RUN php artisan migrate --force
