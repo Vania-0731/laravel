@@ -1,5 +1,6 @@
-FROM php:8.1-fpm
-# Instala dependencias del sistema
+FROM php:8.3-fpm
+
+# Instala dependencias del sistema y extensiones necesarias para Laravel + PostgreSQL
 RUN apt-get update && apt-get install -y \
     git \
     unzip \
@@ -11,19 +12,22 @@ RUN apt-get update && apt-get install -y \
     curl \
     && docker-php-ext-install pdo pdo_pgsql mbstring zip exif pcntl
 
-# Instala Composer
+# Instala Composer desde la imagen oficial
 COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 
 # Establece el directorio de trabajo
 WORKDIR /var/www/html
 
-# Copia archivos del proyecto
+# Copia los archivos del proyecto
 COPY . .
 
-# Instala las dependencias
+# Habilita plugin de Laravel para que Composer no falle
+RUN composer config --no-plugins allow-plugins.laravel/serializable-closure true
+
+# Instala las dependencias PHP del proyecto
 RUN composer install --no-interaction --prefer-dist --optimize-autoloader
 
-# Abre el puerto
+# Abre puerto
 EXPOSE 9000
 
 # Comando por defecto
